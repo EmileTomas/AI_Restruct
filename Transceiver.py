@@ -8,10 +8,9 @@ import sys
 import logging
 
 mutex = threading.Lock()
-pp = pprint.PrettyPrinter()
 
 
-class client():
+class Transceiver():
     def __init__(self):
         self.buf = b""
         self.compress = False
@@ -102,6 +101,7 @@ class client():
         # 打印包的内容
         if output:
             logging.info(msg.decode("utf-8"))
+            pp = pprint.PrettyPrinter()
             pp.pprint(jsonObj)
             sys.stdout.flush()
 

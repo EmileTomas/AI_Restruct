@@ -15,13 +15,13 @@ ROUND_END_PROTOCAL = 14
 
 
 class PushInfoListener:
-    def __init__(self, battle, client,repository):
+    def __init__(self, battle, transceiver,repository):
         self.battle = battle
-        self.client = client
+        self.transceiver = transceiver
         self.repository=repository
 
     def parse_frame(self, output=False):
-        frame_json = self.client.recv(output=output)
+        frame_json = self.transceiver.recv(output=output)
 
         for proto_json in frame_json['data']['event']['protos']:
             self.__parse_and_refresh(proto_json,output=output)
@@ -82,7 +82,7 @@ class PushInfoListener:
         enemy_hero = self.battle.enemy_hero
 
         if proto_json['playerId'] == player_hero.id:
-            draw_card_event_json=self.client.recv(output=output)
+            draw_card_event_json=self.transceiver.recv(output=output)
             for card_json in draw_card_event_json['data']['event']['protos']:
                self.__parse_target_proto(card_json,DRAW_CARD_PROTOCAL)
         else:

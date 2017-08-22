@@ -1,6 +1,6 @@
 from FunctionLayer import *
-
 from ProtocalParser import *
+
 class User:
     def __init__(self, username, passwd):
         self.username = username
@@ -12,7 +12,7 @@ class User:
         self.repository = None
 
         self.deck = None
-        self.match_battle = None
+        self.battle = None
         self.function_layer = FunctionLayer()
     def login(self):
         self.function_layer.login(self.username, self.passwd)
@@ -28,16 +28,16 @@ class User:
         self.function_layer.match_player(output=output)
         self.function_layer.send_fight_ready(output=output)
         self.function_layer.wait_both_ready(output=output)
-        self.match_battle = self.function_layer.enter_battle(self.id, self.repository, output=output)
+        self.battle = self.function_layer.enter_battle(self.id, self.repository, output=output)
 
-        self.push_info_listener=PushInfoListener(self.match_battle, self.function_layer.client, self.repository)
+        self.push_info_listener=PushInfoListener(self.battle, self.function_layer.transceiver, self.repository)
 
     def round_begin(self,output=False):
         self.push_info_listener.parse_frame(output=output)
 
     def round_end(self,output=False):
         # Attack side need send ROUND_END command first
-        if self.match_battle.turn==SELF_TURN:
+        if self.battle.turn==SELF_TURN:
             self.function_layer.send_round_end(output=output)
 
         # RECV ROUND_END_PROTOCAL

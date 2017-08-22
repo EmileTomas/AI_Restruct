@@ -15,7 +15,7 @@ if __name__ == '__main__':
         printer.print_title("Round Begin")
         user.round_begin(True)
 
-        if user.match_battle.turn == SELF_TURN:
+        if user.battle.turn == SELF_TURN:
             printer.print_title("ATTACK USE CARD")
         else:
             pass

@@ -1,7 +1,8 @@
-from urllib import parse, request
-from ProtocalLayer import *
 from Card import *
 from Battle import *
+from Transceiver import *
+from urllib import parse, request
+
 
 
 class FunctionLayer:
@@ -13,7 +14,7 @@ class FunctionLayer:
         self.login_prefix = "http://proxytest.aszb.aoshitang.com/root/gateway.action?command=%s&%s"
         self.login_suffix = "userName=%s&password=%s&channelId=%s"
 
-        self.client = client()
+        self.transceiver = Transceiver()
 
     def login(self, username, passwd):
         login_response = self.__send_login_request(username, passwd)
@@ -36,12 +37,12 @@ class FunctionLayer:
         self.gateway_info = jsonObj['data']['gateway']
         self.game_server_info = jsonObj['data']['gameServer']
 
-        self.client.socket_connect(self.gateway_info)
-        self.client.send_cmd_server(self.gateway_info, cmd="reconnect",
-                                    params={"sessionId": self.gateway_info['sessionId']})
+        self.transceiver.socket_connect(self.gateway_info)
+        self.transceiver.send_cmd_server(self.gateway_info, cmd="reconnect",
+                                         params={"sessionId": self.gateway_info['sessionId']})
 
     def get_player_info(self, output=False):
-        json_obj = self.client.send_cmd_server(self.game_server_info, "player@getPlayerList", {}, output=output)
+        json_obj = self.transceiver.send_cmd_server(self.game_server_info, "player@getPlayerList", {}, output=output)
 
         player_id = json_obj['data']['playerList'][0]['playerId']
         player_name = json_obj['data']['playerList'][0]['playerName']
@@ -50,7 +51,7 @@ class FunctionLayer:
         return player_info
 
     def get_card_info(self, output=False):
-        json_obj = self.client.send_cmd_server(self.game_server_info, "formation@getInfo", {}, output=output)
+        json_obj = self.transceiver.send_cmd_server(self.game_server_info, "formation@getInfo", {}, output=output)
 
         repository = self.__parse_card_repository(json_obj)
         deck = self.__parse_deck(json_obj, repository)
@@ -80,18 +81,18 @@ class FunctionLayer:
                 return group['cards']
 
     def match_player(self, output=False):
-        self.client.send_cmd_server(self.game_server_info, "fight@signup", output=output)
-        match_result_json = self.client.recv(output=output)
+        self.transceiver.send_cmd_server(self.game_server_info, "fight@signup", output=output)
+        match_result_json = self.transceiver.recv(output=output)
         self.fight_server_info = match_result_json['data']['schedule']
 
     def send_fight_ready(self, output=False):
-        self.client.send_cmd_server(self.fight_server_info, "fight@ready", output=output)
+        self.transceiver.send_cmd_server(self.fight_server_info, "fight@ready", output=output)
 
     def wait_both_ready(self, output=False):
-        self.client.recv(output=output)
+        self.transceiver.recv(output=output)
 
     def enter_battle(self, user_id, repository, output=False):
-        enter_battle_json = self.client.send_cmd_server(self.fight_server_info, "fight@enterBattle", output=output)
+        enter_battle_json = self.transceiver.send_cmd_server(self.fight_server_info, "fight@enterBattle", output=output)
         battle = self.__parse_battle_json(enter_battle_json, user_id, repository, output=output)
         return battle
 
@@ -153,4 +154,4 @@ class FunctionLayer:
         return self_hand_card, enemy_hand_card
 
     def send_round_end(self, output=False):
-        self.client.send_cmd_server(self.fight_server_info, "fight@endRound", output=output)
+        self.transceiver.send_cmd_server(self.fight_server_info, "fight@endRound", output=output)
