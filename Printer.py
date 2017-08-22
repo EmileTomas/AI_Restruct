@@ -11,6 +11,7 @@ class Printer():
         print(special_char_len * '=' + str + special_char_len * '=')
 
     def print_battle(self, battle):
+
         m31=m21=m11=e11=e21=e31=1
         mb=m32=m22=m12=e12=e22=e32=eb=2
         m33=m23=m13=e13=e23=e33=3
@@ -34,6 +35,4 @@ class Printer():
         print("         .%-8s.%-8s.%-8s.        .%-8s.%-8s.%-8s.  " % (m33, m23, m13, e13, e23, e33))
         print("         .        .        .        .        .        .        .        .")
         print("         ............................        ............................")
-
-
 

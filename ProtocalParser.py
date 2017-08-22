@@ -1,6 +1,5 @@
 from Battle import *
 from Card import *
-
 ATTACK_PROTOCAL = 1
 CRYSTAL_PROTOCAL = 2
 MILIRTARY_PROTOCAL = 3
@@ -15,11 +14,10 @@ ROUND_END_PROTOCAL = 14
 
 
 class PushInfoListener:
-    def __init__(self, battle, transceiver,repository):
+    def __init__(self, battle,repository,transceiver):
         self.battle = battle
-        self.transceiver = transceiver
         self.repository=repository
-
+        self.transceiver=transceiver
     def parse_frame(self, output=False):
         frame_json = self.transceiver.recv(output=output)
 

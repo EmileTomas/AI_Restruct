@@ -1,6 +1,7 @@
-from UserInterfaceLayer import *
+from User import *
 from Printer import *
 import time
+import sys
 
 if __name__ == '__main__':
     printer = Printer()
