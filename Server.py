@@ -146,11 +146,11 @@ class FightServerConnector(ServerConnector):
             attTeam_info = enter_battle_json['data']['attTeam']
             defTeam_info = enter_battle_json['data']['defTeam']
             if attTeam_info['playerId'] == user_id:
-                begin_turn = SELF_TURN
+                begin_turn = SELF
                 player_hero_info = attTeam_info
                 enemy_hero_info = defTeam_info
             else:
-                begin_turn = SELF_TURN
+                begin_turn = SELF
                 player_hero_info = defTeam_info
                 enemy_hero_info = attTeam_info
         else:
@@ -162,6 +162,7 @@ class FightServerConnector(ServerConnector):
         self_hand_card = []
         for card_json in enter_battle_json['data']['grids']:
             card = repository.search_card(card_json['sid'])
+            card.id=card_json['id']
             self_hand_card.append(card)
 
         enemy_hand_card = []

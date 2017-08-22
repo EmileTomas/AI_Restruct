@@ -12,18 +12,18 @@ if __name__ == '__main__':
 
     GAME_NOT_END = False
 
-    while True:
-        printer.print_title("Round Begin")
-        user.round_begin(True)
+    printer.print_title("Round Begin")
+    user.round_begin(True)
+    printer.print_battle(user.battle)
+    if user.battle.turn == SELF:
+        printer.print_title("ATTACK USE CARD")
+        user.attack()
+    else:
+        pass
 
-        if user.battle.turn == SELF_TURN:
-            printer.print_title("ATTACK USE CARD")
-        else:
-            pass
+    # 解析卡牌使用后的通知proto
+    user.push_info_listener.parse_frame(output=True)
+    printer.print_battle(user.battle)
 
-        printer.print_title("Round End")
-        user.round_end(True)
-
-        time.sleep(10)
-
-
+    printer.print_title("Round End")
+    # user.round_end(True)

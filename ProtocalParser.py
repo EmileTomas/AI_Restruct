@@ -1,8 +1,7 @@
 from Battle import *
-from Card import *
 ATTACK_PROTOCAL = 1
 CRYSTAL_PROTOCAL = 2
-MILIRTARY_PROTOCAL = 3
+MILITARY_PROTOCAL = 3
 DRAW_CARD_PROTOCAL = 4
 SKILL_ATTACK_PROTOCAL = 6
 BUFF_PROTOCAL = 8
@@ -30,8 +29,8 @@ class PushInfoListener:
             pass
         elif proto_id == CRYSTAL_PROTOCAL:
             self.__parse_crystal_proto(proto_json)
-        elif proto_id == MILIRTARY_PROTOCAL:
-            pass
+        elif proto_id == MILITARY_PROTOCAL:
+            self.__parse_military_proto(proto_json)
         elif proto_id == DRAW_CARD_PROTOCAL:
             self.__parse_draw_card_proto(proto_json)
         elif proto_id == SKILL_ATTACK_PROTOCAL:
@@ -71,9 +70,9 @@ class PushInfoListener:
     def __parse_round_begin_proto(self, proto_json):
         self.battle.round_count =proto_json['round']
         if proto_json['playerId']==self.battle.player_hero.id:
-            self.battle.turn=SELF_TURN
+            self.battle.turn=SELF
         else:
-            self.battle.turn=ENEMY_TURN
+            self.battle.turn=ENEMY
 
     def __parse_hand_card_change_proto(self, proto_json,output=False):
         player_hero = self.battle.player_hero
@@ -90,4 +89,13 @@ class PushInfoListener:
 
     def __parse_draw_card_proto(self,proto_json):
         card = self.repository.search_card(proto_json['sid'])
+        card.id=proto_json['id']
         self.battle.player_hero.hand_cards.append(card)
+
+    def __parse_military_proto(self,proto_json):
+        general=General(proto_json)
+        if proto_json['playerId']==self.battle.player_hero.id:
+            put_side=SELF
+        else:
+            put_side=ENEMY
+        self.battle.put_general(general, proto_json['pos'], put_side)

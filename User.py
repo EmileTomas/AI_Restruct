@@ -1,8 +1,6 @@
 from Server import *
 from ProtocalParser import *
 
-
-
 class User:
     def __init__(self, username, passwd):
         self.username = username
@@ -47,15 +45,50 @@ class User:
         self.push_info_listener=PushInfoListener(self.battle, self.repository,self.transceiver)
 
     def round_begin(self,output=False):
+        # Update battle information (including hand cards changes)
         self.push_info_listener.parse_frame(output=output)
 
     def round_end(self,output=False):
         # Attack side need send ROUND_END command first
-        if self.battle.turn==SELF_TURN:
+        if self.battle.turn==SELF:
             self.fight_server_connector.send_round_end(output=output)
 
         # RECV ROUND_END_PROTOCAL
         self.push_info_listener.parse_frame(output=output)
 
-    def user_card(self):
-        pass
+    def attack(self):
+        card_indexs,field_positions=self.__analysis()
+        self.put_cards(card_indexs,field_positions,output=True)
+
+
+    def __analysis(self):
+        player_hero=self.battle.player_hero
+        enemy_hero=self.battle.enemy_hero
+        card_indexs=[]
+
+
+        for index,card in enumerate(player_hero.hand_cards):
+            if card.cost<=player_hero.crystal and card.type==MILITARY_CARD :
+
+                card_indexs.append(index)
+                print(card.sid,card.cost)
+                break
+
+        field_positions=[11]
+
+
+
+
+
+        return card_indexs,field_positions
+
+    def put_cards(self, card_indexs, field_positions, output=False):
+        for index, card_index in enumerate(card_indexs):
+            card_id = self.battle.player_hero.hand_cards[card_index].id
+            self.fight_server_connector.send_cmd("fight@addGeneral",
+                                                 {'id': card_id, 'pos': field_positions[index]},
+                                                 output=output)
+            # General_proto
+            # self.push_info_listener.parse_frame(output=output)
+        for index in sorted(card_indexs, reverse=True):
+            del self.battle.player_hero.hand_cards[index]
