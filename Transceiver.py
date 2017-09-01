@@ -108,3 +108,4 @@ class Transceiver():
     def send_cmd_server(self, server_type,server_id,cmd,params={},output=False):
         json_obj = self.__send_and_echo(server_type, server_id, cmd, params, output=output)
         return json_obj
+
